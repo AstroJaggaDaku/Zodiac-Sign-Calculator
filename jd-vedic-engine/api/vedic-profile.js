@@ -5,7 +5,7 @@ import { getRemedy } from "../engine/remedy";
 
 /* 🔴 আপনার Google Apps Script Web App URL */
 const SHEET_URL =
-  "https://script.google.com/macros/s/AKfycby4JUwVJYe3V_1m40lPLcTATL4LhoN9gP4yckkhLQOSqwt9RPmELqBhzYs5a70IzI9i/exec";
+  "https://script.google.com/macros/s/AKfycbwdYfN9wAfP-7YPweJaobZT045iHF6ttBOXpuWtYf4Av45qfrYMBXFllp6Q-qOwVu-D/exec";
 
 export default async function handler(req, res) {
 
@@ -107,3 +107,4 @@ export default async function handler(req, res) {
     });
   }
 }
+

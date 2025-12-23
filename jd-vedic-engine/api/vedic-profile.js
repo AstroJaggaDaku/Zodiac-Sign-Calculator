@@ -1,37 +1,26 @@
+import fetch from "node-fetch";
 import { getVedicMoon } from "../engine/vedicMoon";
 import { getNakshatra } from "../engine/nakshatra";
 import { getNumerology } from "../engine/numerology";
 import { getRemedy } from "../engine/remedy";
 
-/* 🔴 আপনার Google Apps Script Web App URL */
+/* 🔴 Google Apps Script Web App URL */
 const SHEET_URL =
   "https://script.google.com/macros/s/AKfycbwdYfN9wAfP-7YPweJaobZT045iHF6ttBOXpuWtYf4Av45qfrYMBXFllp6Q-qOwVu-D/exec";
 
 export default async function handler(req, res) {
 
   /* ===============================
-     ✅ CORS (ODOO SAFE)
+     ✅ GLOBAL CORS (ODOO SAFE)
   =============================== */
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "https://www.51kalibari.com"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "POST, OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type"
-  );
-  res.setHeader(
-    "Access-Control-Max-Age",
-    "86400"
-  );
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Max-Age", "86400");
 
-  /* ✅ Preflight */
+  /* ✅ Preflight fix (VERY IMPORTANT) */
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    return res.status(200).json({ ok: true });
   }
 
   if (req.method !== "POST") {
@@ -57,15 +46,16 @@ export default async function handler(req, res) {
        🌙 VEDIC ENGINE
     =============================== */
     const moon = getVedicMoon(dob, time);
+
     const nakshatra = getNakshatra(
       Number(moon.moon_degree)
     );
+
     const numerology = getNumerology(name, dob);
     const remedy = getRemedy(moon.sign);
 
     /* ===============================
-       📄 GOOGLE SHEET SAVE (SILENT)
-       — user কখনো error দেখবে না
+       📄 GOOGLE SHEET SAVE (NON-BLOCKING)
     =============================== */
     fetch(SHEET_URL, {
       method: "POST",
@@ -82,14 +72,12 @@ export default async function handler(req, res) {
         life_path: numerology.life_path,
         source: "Odoo – 51kalibari"
       })
-    }).catch(() => {
-      /* silent fail – UI block করবে না */
-    });
+    }).catch(() => {});
 
     /* ===============================
        ✅ FINAL RESPONSE (ODOO UI)
     =============================== */
-    return res.json({
+    return res.status(200).json({
       branding: "Astrologer Joydev Sastri",
       zodiac: moon.sign,
       moon_degree: moon.moon_degree,
@@ -107,4 +95,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
